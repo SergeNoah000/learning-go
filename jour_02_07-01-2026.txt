@@ -1,0 +1,27 @@
+📌 COMPTE RENDU DÉVELOPPEUR – OSSECA
+🧑‍💻 Nom : Noah Mvondo Serge
+📂 Projet: Afaapay
+📅 Date : 07/01/2026
+
+✅ Fonctionnalités implémentées aujourd'hui
+- Installation du framework Gin (go get -u github.com/gin-gonic/gin)
+- Création d'un serveur HTTP basique avec Gin (jour_01/server.go)
+- Création de routes GET, POST, PUT, DELETE avec Gin
+- Gestion des paramètres d'URL avec :id
+- Binding de JSON dans les requêtes POST/PUT avec validation
+- Réponses JSON structurées avec c.JSON()
+- Création d'une API CRUD complète pour gérer des utilisateurs (en mémoire)
+- Gestion des codes de statut HTTP (200, 201, 400, 404)
+
+🚧 En cours
+Avancement : 100%
+
+⚠️ Blocage (si aucun, écrire "Aucun")
+Aucun
+
+➡️ Prochaine étape
+- Apprendre les middlewares dans Gin
+- Validation avancée des données avec binding tags
+- Groupes de routes pour organiser l'API
+
+📤 Code pushé sur Git : À faire

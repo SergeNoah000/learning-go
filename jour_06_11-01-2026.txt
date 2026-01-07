@@ -1,0 +1,26 @@
+📌 COMPTE RENDU DÉVELOPPEUR – OSSECA
+🧑‍💻 Nom : Noah Mvondo Serge
+📂 Projet: Afaapay
+📅 Date : 11/01/2026
+
+✅ Fonctionnalités implémentées aujourd'hui
+- Restructuration du projet (controllers, services, models, routes)
+- Séparation des responsabilités (architecture clean)
+- Création de tests unitaires pour les handlers
+- Tests des middlewares et validations
+- Utilisation de testify pour les assertions
+- Mock de la base de données pour les tests
+- Documentation basique avec commentaires Swagger
+
+🚧 En cours
+Avancement : 100%
+
+⚠️ Blocage (si aucun, écrire "Aucun")
+Aucun
+
+➡️ Prochaine étape
+- Mini projet final intégrant tous les concepts
+- CORS et sécurité basique
+- Déploiement et bonnes pratiques
+
+📤 Code pushé sur Git : Oui

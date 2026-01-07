@@ -1,0 +1,24 @@
+📌 COMPTE RENDU DÉVELOPPEUR – OSSECA
+🧑‍💻 Nom : Noah Mvondo Serge
+📂 Projet: Afaapay
+📅 Date : 06/01/2026
+
+✅ Fonctionnalités implémentées aujourd'hui
+- Installation de Go (version 1.21+)
+- Configuration de l'environnement de développement (GOPATH, modules)
+- Découverte de la syntaxe de base de Go (variables, types, fonctions)
+- Premier programme "Hello World" en Go (main.go)
+- Initialisation du module Go avec go mod
+
+🚧 En cours
+Avancement : 100%
+
+⚠️ Blocage (si aucun, écrire "Aucun")
+Aucun
+
+➡️ Prochaine étape
+- Installer le framework Gin
+- Créer un serveur HTTP basique
+- Apprendre les méthodes HTTP (GET, POST, PUT, DELETE)
+
+📤 Code pushé sur Git : À faire

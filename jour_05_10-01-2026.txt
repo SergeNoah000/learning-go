@@ -1,0 +1,26 @@
+📌 COMPTE RENDU DÉVELOPPEUR – OSSECA
+🧑‍💻 Nom : Noah Mvondo Serge
+📂 Projet: Afaapay
+📅 Date : 10/01/2026
+
+✅ Fonctionnalités implémentées aujourd'hui
+- Upload de fichiers (images, documents) avec Gin
+- Validation de types de fichiers et taille
+- Sauvegarde de fichiers sur le serveur
+- Mise en place d'un système d'authentification JWT
+- Génération et validation de tokens JWT
+- Protection de routes avec middleware JWT
+- Gestion des variables d'environnement (.env avec godotenv)
+
+🚧 En cours
+Avancement : 100%
+
+⚠️ Blocage (si aucun, écrire "Aucun")
+Aucun
+
+➡️ Prochaine étape
+- Structuration du projet (architecture MVC/clean)
+- Tests unitaires avec Go testing
+- Documentation de l'API
+
+📤 Code pushé sur Git : Oui

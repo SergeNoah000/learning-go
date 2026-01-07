@@ -1,0 +1,26 @@
+📌 COMPTE RENDU DÉVELOPPEUR – OSSECA
+🧑‍💻 Nom : Noah Mvondo Serge
+📂 Projet: Afaapay
+📅 Date : 09/01/2026
+
+✅ Fonctionnalités implémentées aujourd'hui
+- Installation et configuration de GORM
+- Connexion à une base de données (MySQL/PostgreSQL)
+- Définition de modèles (structs) avec tags GORM
+- Auto-migration des tables
+- Opérations CRUD avec GORM (Create, Read, Update, Delete)
+- Intégration GORM + Gin pour une API complète
+- Gestion des relations (One-to-Many, Many-to-Many) - bases
+
+🚧 En cours
+Avancement : 100%
+
+⚠️ Blocage (si aucun, écrire "Aucun")
+Aucun
+
+➡️ Prochaine étape
+- Upload de fichiers avec Gin
+- Authentification JWT basique
+- Variables d'environnement et configuration
+
+📤 Code pushé sur Git : Oui
