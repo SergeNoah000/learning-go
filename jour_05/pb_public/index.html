@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Articles - PocketBase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/pocketbase@0.25.0/dist/pocketbase.umd.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-blue-600">📝 Blog Articles</h1>
+            <div id="auth-section">
+                <button id="login-btn" onclick="showLoginModal()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Connexion</button>
+                <button id="register-btn" onclick="showRegisterModal()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ml-2">Inscription</button>
+                <div id="user-info" class="hidden">
+                    <span id="user-email" class="text-gray-700 mr-4"></span>
+                    <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Déconnexion</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Bouton créer article -->
+        <div id="create-article-section" class="hidden mb-6">
+            <button onclick="showArticleModal()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                ➕ Nouvel Article
+            </button>
+        </div>
+
+        <!-- Liste des articles -->
+        <div id="articles-list" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <!-- Articles chargés dynamiquement -->
+        </div>
+    </main>
+
+    <!-- Modal Connexion -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h2 class="text-xl font-bold mb-4">Connexion</h2>
+            <input type="email" id="login-email" placeholder="Email" class="w-full p-2 border rounded mb-3">
+            <input type="password" id="login-password" placeholder="Mot de passe" class="w-full p-2 border rounded mb-4">
+            <div class="flex justify-end gap-2">
+                <button onclick="hideModals()" class="px-4 py-2 bg-gray-300 rounded">Annuler</button>
+                <button onclick="login()" class="px-4 py-2 bg-blue-500 text-white rounded">Connexion</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Inscription -->
+    <div id="register-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-96">
+            <h2 class="text-xl font-bold mb-4">Inscription</h2>
+            <input type="text" id="register-name" placeholder="Nom" class="w-full p-2 border rounded mb-3">
+            <input type="email" id="register-email" placeholder="Email" class="w-full p-2 border rounded mb-3">
+            <input type="password" id="register-password" placeholder="Mot de passe" class="w-full p-2 border rounded mb-3">
+            <input type="password" id="register-password-confirm" placeholder="Confirmer mot de passe" class="w-full p-2 border rounded mb-4">
+            <div class="flex justify-end gap-2">
+                <button onclick="hideModals()" class="px-4 py-2 bg-gray-300 rounded">Annuler</button>
+                <button onclick="register()" class="px-4 py-2 bg-green-500 text-white rounded">S'inscrire</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nouvel Article -->
+    <div id="article-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4">Nouvel Article</h2>
+            <input type="text" id="article-title" placeholder="Titre" class="w-full p-2 border rounded mb-3">
+            <select id="article-category" class="w-full p-2 border rounded mb-3">
+                <option value="">Sélectionner une catégorie</option>
+                <option value="tech">Technologie</option>
+                <option value="lifestyle">Lifestyle</option>
+                <option value="travel">Voyage</option>
+                <option value="food">Cuisine</option>
+                <option value="other">Autre</option>
+            </select>
+            <textarea id="article-content" placeholder="Contenu de l'article..." rows="6" class="w-full p-2 border rounded mb-3"></textarea>
+            <div class="mb-4">
+                <label class="block text-gray-700 mb-2">Images (plusieurs fichiers possibles)</label>
+                <input type="file" id="article-images" multiple accept="image/*" class="w-full p-2 border rounded">
+                <div id="image-preview" class="flex gap-2 mt-2 flex-wrap"></div>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button onclick="hideModals()" class="px-4 py-2 bg-gray-300 rounded">Annuler</button>
+                <button onclick="createArticle()" class="px-4 py-2 bg-blue-500 text-white rounded">Publier</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Détail Article -->
+    <div id="detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div id="article-detail"></div>
+            <button onclick="hideModals()" class="mt-4 px-4 py-2 bg-gray-300 rounded">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        const pb = new PocketBase('http://127.0.0.1:8090');
+
+        // État initial
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadArticles();
+        });
+
+        // Preview images
+        document.getElementById('article-images')?.addEventListener('change', function(e) {
+            const preview = document.getElementById('image-preview');
+            preview.innerHTML = '';
+            Array.from(e.target.files).forEach(file => {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.className = 'w-20 h-20 object-cover rounded';
+                preview.appendChild(img);
+            });
+        });
+
+        // Vérifier l'authentification
+        function checkAuth() {
+            if (pb.authStore.isValid) {
+                document.getElementById('login-btn').classList.add('hidden');
+                document.getElementById('register-btn').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('hidden');
+                document.getElementById('user-email').textContent = pb.authStore.model.email;
+                document.getElementById('create-article-section').classList.remove('hidden');
+            } else {
+                document.getElementById('login-btn').classList.remove('hidden');
+                document.getElementById('register-btn').classList.remove('hidden');
+                document.getElementById('user-info').classList.add('hidden');
+                document.getElementById('create-article-section').classList.add('hidden');
+            }
+        }
+
+        // Modals
+        function showLoginModal() { document.getElementById('login-modal').classList.remove('hidden'); }
+        function showRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
+        function showArticleModal() { document.getElementById('article-modal').classList.remove('hidden'); }
+        function hideModals() {
+            document.querySelectorAll('[id$="-modal"]').forEach(m => m.classList.add('hidden'));
+        }
+
+        // Connexion
+        async function login() {
+            try {
+                await pb.collection('users').authWithPassword(
+                    document.getElementById('login-email').value,
+                    document.getElementById('login-password').value
+                );
+                hideModals();
+                checkAuth();
+                loadArticles();
+                alert('Connecté !');
+            } catch (e) {
+                alert('Erreur: ' + e.message);
+            }
+        }
+
+        // Inscription
+        async function register() {
+            try {
+                const data = {
+                    email: document.getElementById('register-email').value,
+                    password: document.getElementById('register-password').value,
+                    passwordConfirm: document.getElementById('register-password-confirm').value,
+                    name: document.getElementById('register-name').value
+                };
+                await pb.collection('users').create(data);
+                await pb.collection('users').authWithPassword(data.email, data.password);
+                hideModals();
+                checkAuth();
+                alert('Inscription réussie !');
+            } catch (e) {
+                alert('Erreur: ' + e.message);
+            }
+        }
+
+        // Déconnexion
+        function logout() {
+            pb.authStore.clear();
+            checkAuth();
+            loadArticles();
+        }
+
+        // Charger les articles
+        async function loadArticles() {
+            try {
+                const articles = await pb.collection('posts').getFullList({
+                    sort: '-created',
+                    expand: 'author'
+                });
+
+                const container = document.getElementById('articles-list');
+                container.innerHTML = articles.map(article => {
+                    const imageUrl = article.images?.length > 0 
+                        ? pb.files.getURL(article, article.images[0], {thumb: '300x200'})
+                        : 'https://via.placeholder.com/300x200?text=No+Image';
+                    
+                    return `
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer" onclick="showArticleDetail('${article.id}')">
+                            <img src="${imageUrl}" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${article.category || 'Autre'}</span>
+                                <h3 class="text-lg font-bold mt-2">${article.title}</h3>
+                                <p class="text-gray-600 text-sm mt-2 line-clamp-2">${article.content?.substring(0, 100)}...</p>
+                                <div class="flex justify-between items-center mt-4 text-sm text-gray-500">
+                                    <span>👤 ${article.expand?.author?.name || 'Anonyme'}</span>
+                                    <span>❤️ ${article.likes_count || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                console.error('Erreur chargement articles:', e);
+            }
+        }
+
+        // Créer un article
+        async function createArticle() {
+            if (!pb.authStore.isValid) {
+                alert('Vous devez être connecté');
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('title', document.getElementById('article-title').value);
+                formData.append('content', document.getElementById('article-content').value);
+                formData.append('category', document.getElementById('article-category').value);
+                formData.append('author', pb.authStore.model.id);
+
+                const files = document.getElementById('article-images').files;
+                for (let i = 0; i < files.length; i++) {
+                    formData.append('images', files[i]);
+                }
+
+                await pb.collection('posts').create(formData);
+                hideModals();
+                loadArticles();
+                alert('Article publié !');
+                
+                // Reset form
+                document.getElementById('article-title').value = '';
+                document.getElementById('article-content').value = '';
+                document.getElementById('article-category').value = '';
+                document.getElementById('article-images').value = '';
+                document.getElementById('image-preview').innerHTML = '';
+            } catch (e) {
+                alert('Erreur: ' + e.message);
+            }
+        }
+
+        // Afficher détail article
+        async function showArticleDetail(id) {
+            try {
+                const article = await pb.collection('posts').getOne(id, { expand: 'author' });
+                const comments = await pb.collection('comments').getFullList({
+                    filter: `post="${id}"`,
+                    expand: 'user',
+                    sort: '-created'
+                });
+
+                // Vérifier si l'utilisateur a déjà liké
+                let hasLiked = false;
+                if (pb.authStore.isValid) {
+                    try {
+                        const likes = await pb.collection('likes').getFullList({
+                            filter: `post="${id}" && user="${pb.authStore.model.id}"`
+                        });
+                        hasLiked = likes.length > 0;
+                    } catch (e) {}
+                }
+
+                const images = article.images?.map(img => 
+                    `<img src="${pb.files.getURL(article, img)}" class="max-h-64 rounded">`
+                ).join('') || '';
+
+                document.getElementById('article-detail').innerHTML = `
+                    <h2 class="text-2xl font-bold">${article.title}</h2>
+                    <div class="flex gap-4 text-sm text-gray-500 mt-2">
+                        <span>👤 ${article.expand?.author?.name || 'Anonyme'}</span>
+                        <span>📅 ${new Date(article.created).toLocaleDateString('fr-FR')}</span>
+                        <span class="bg-blue-100 text-blue-800 px-2 rounded">${article.category || 'Autre'}</span>
+                    </div>
+                    <div class="flex gap-2 my-4 overflow-x-auto">${images}</div>
+                    <p class="text-gray-700 whitespace-pre-wrap">${article.content}</p>
+                    
+                    <div class="flex gap-4 mt-6 border-t pt-4">
+                        <button onclick="toggleLike('${id}')" class="flex items-center gap-2 ${hasLiked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500">
+                            ${hasLiked ? '❤️' : '🤍'} <span id="like-count">${article.likes_count || 0}</span> likes
+                        </button>
+                        <span class="text-gray-500">💬 ${comments.length} commentaires</span>
+                    </div>
+
+                    ${pb.authStore.isValid ? `
+                        <div class="mt-6">
+                            <textarea id="comment-text" placeholder="Votre commentaire..." rows="3" class="w-full p-2 border rounded"></textarea>
+                            <button onclick="addComment('${id}')" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded">Commenter</button>
+                        </div>
+                    ` : '<p class="text-gray-500 mt-4">Connectez-vous pour commenter</p>'}
+
+                    <div class="mt-6 space-y-4">
+                        <h3 class="font-bold">Commentaires</h3>
+                        ${comments.map(c => `
+                            <div class="bg-gray-50 p-3 rounded">
+                                <div class="flex justify-between text-sm text-gray-500">
+                                    <span>👤 ${c.expand?.user?.name || 'Anonyme'}</span>
+                                    <span>${new Date(c.created).toLocaleDateString('fr-FR')}</span>
+                                </div>
+                                <p class="mt-2">${c.content}</p>
+                            </div>
+                        `).join('') || '<p class="text-gray-500">Aucun commentaire</p>'}
+                    </div>
+                `;
+
+                document.getElementById('detail-modal').classList.remove('hidden');
+            } catch (e) {
+                console.error('Erreur:', e);
+            }
+        }
+
+        // Ajouter un commentaire
+        async function addComment(articleId) {
+            if (!pb.authStore.isValid) {
+                alert('Vous devez être connecté');
+                return;
+            }
+
+            try {
+                await pb.collection('comments').create({
+                    post: articleId,
+                    user: pb.authStore.model.id,
+                    content: document.getElementById('comment-text').value
+                });
+                showArticleDetail(articleId);
+            } catch (e) {
+                alert('Erreur: ' + e.message);
+            }
+        }
+
+        // Like / Unlike
+        async function toggleLike(articleId) {
+            if (!pb.authStore.isValid) {
+                alert('Vous devez être connecté');
+                return;
+            }
+
+            try {
+                const existing = await pb.collection('likes').getFullList({
+                    filter: `post="${articleId}" && user="${pb.authStore.model.id}"`
+                });
+
+                if (existing.length > 0) {
+                    // Unlike
+                    await pb.collection('likes').delete(existing[0].id);
+                } else {
+                    // Like
+                    await pb.collection('likes').create({
+                        post: articleId,
+                        user: pb.authStore.model.id
+                    });
+                }
+
+                showArticleDetail(articleId);
+                loadArticles();
+            } catch (e) {
+                alert('Erreur: ' + e.message);
+            }
+        }
+    </script>
+</body>
+</html>
