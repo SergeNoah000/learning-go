@@ -203,11 +203,10 @@
                         <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition cursor-pointer" onclick="showArticleDetail('${article.id}')">
                             <img src="${imageUrl}" class="w-full h-48 object-cover">
                             <div class="p-4">
-                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">${article.category || 'Autre'}</span>
-                                <h3 class="text-lg font-bold mt-2">${article.title}</h3>
-                                <p class="text-gray-600 text-sm mt-2 line-clamp-2">${article.content?.substring(0, 100)}...</p>
+                                <h3 class="text-lg font-bold mt-2">${article.titre}</h3>
+                                <p class="text-gray-600 text-sm mt-2 line-clamp-2">${article.desc?.substring(0, 100) || ''}...</p>
                                 <div class="flex justify-between items-center mt-4 text-sm text-gray-500">
-                                    <span>👤 ${article.expand?.author?.name || 'Anonyme'}</span>
+                                    <span>👤 ${article.expand?.author?.[0]?.name || 'Anonyme'}</span>
                                     <span>❤️ ${article.likes_count || 0}</span>
                                 </div>
                             </div>
@@ -228,9 +227,9 @@
 
             try {
                 const formData = new FormData();
-                formData.append('title', document.getElementById('article-title').value);
-                formData.append('content', document.getElementById('article-content').value);
-                formData.append('category', document.getElementById('article-category').value);
+                formData.append('titre', document.getElementById('article-title').value);
+                formData.append('desc', document.getElementById('article-content').value);
+                formData.append('active', true);
                 formData.append('author', pb.authStore.model.id);
 
                 const files = document.getElementById('article-images').files;
@@ -280,14 +279,13 @@
                 ).join('') || '';
 
                 document.getElementById('article-detail').innerHTML = `
-                    <h2 class="text-2xl font-bold">${article.title}</h2>
+                    <h2 class="text-2xl font-bold">${article.titre}</h2>
                     <div class="flex gap-4 text-sm text-gray-500 mt-2">
-                        <span>👤 ${article.expand?.author?.name || 'Anonyme'}</span>
+                        <span>👤 ${article.expand?.author?.[0]?.name || article.expand?.author?.name || 'Anonyme'}</span>
                         <span>📅 ${new Date(article.created).toLocaleDateString('fr-FR')}</span>
-                        <span class="bg-blue-100 text-blue-800 px-2 rounded">${article.category || 'Autre'}</span>
                     </div>
                     <div class="flex gap-2 my-4 overflow-x-auto">${images}</div>
-                    <p class="text-gray-700 whitespace-pre-wrap">${article.content}</p>
+                    <p class="text-gray-700 whitespace-pre-wrap">${article.desc}</p>
                     
                     <div class="flex gap-4 mt-6 border-t pt-4">
                         <button onclick="toggleLike('${id}')" class="flex items-center gap-2 ${hasLiked ? 'text-red-500' : 'text-gray-500'} hover:text-red-500">
