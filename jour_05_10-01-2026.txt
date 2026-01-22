@@ -4,23 +4,23 @@
 📅 Date : 10/01/2026
 
 ✅ Fonctionnalités implémentées aujourd'hui
-- Upload de fichiers (images, documents) avec Gin
-- Validation de types de fichiers et taille
-- Sauvegarde de fichiers sur le serveur
-- Mise en place d'un système d'authentification JWT
-- Génération et validation de tokens JWT
-- Protection de routes avec middleware JWT
-- Gestion des variables d'environnement (.env avec godotenv)
+- Découverte et installation de PocketBase (backend Go tout-en-un)
+- Création d'une mini-app de blog avec PocketBase
+- Collections créées : posts, comments, likes
+- Frontend HTML/JS avec TailwindCSS
+- Authentification utilisateur (inscription/connexion)
+- Upload d'images multiples sur les articles
+- Configuration des API Rules (public/privé)
+- Relations entre collections (author, user)
 
 🚧 En cours
-Avancement : 100%
+Avancement : 60%
 
-⚠️ Blocage (si aucun, écrire "Aucun")
-Aucun
+⚠️ Blocage: 
+ - c'est un systeme de manuel, il y a beaucoup a apprendre, 
 
 ➡️ Prochaine étape
 - Structuration du projet (architecture MVC/clean)
-- Tests unitaires avec Go testing
 - Documentation de l'API
 
 📤 Code pushé sur Git : Oui
